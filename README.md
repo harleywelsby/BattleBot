@@ -4,6 +4,8 @@ This is a work-in-progress Discord bot that allows users to train in various "mo
 
 The program takes a CSV file of all moves that can be learned and a CSV of all players who have interacted with the game, and allows users to add moves to their set and level them up in order to fight eachother in a text-based combat system.
 
+Please note that currently BattleBot is hosted from a private repository due to the need of a private bot token to run as a discord account. This repository will be updated alongside the private repository although it may at times be 1 or 2 commits behind.
+
 ## Currently working commands include: ##
 
 ### Training and Info: ###
