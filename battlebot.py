@@ -92,12 +92,6 @@ def doFiles():
                             break
         p.setMoves(tempMoves)
 
-    #Get the scores of each player into the scoreboard
-    for p in data.PLAYERDICT:
-        current = data.PLAYERDICT[p]
-        data.SCOREBOARD.append(data.Score(current.name, current.wins, current.losses))
-    data.SCOREBOARD.sort(key=getWin, reverse=True)
-
 #Format move data (for .moves)
 def getMoveInfo(move):
     
@@ -780,8 +774,12 @@ async def attack(ctx, move):
 
             #Check if either player has been defeated
             if currentFight.p1health <= 0:
-                await ctx.send(f'KO! {user2.mention} destroyed {user1.mention}!')         
-            elif currentFight.p2health <=0:
+                await ctx.send(f'KO! {user2.mention} destroyed {user1.mention}!')    
+                data.PLAYERDICT[str(f.player2)].wins += 1     
+                data.PLAYERDICT[str(f.player1)].losses += 1     
+            elif currentFight.p2health <= 0:
+                data.PLAYERDICT[str(f.player1)].wins += 1     
+                data.PLAYERDICT[str(f.player2)].losses += 1    
                 await ctx.send(f'KO! {user1.mention} destroyed {user2.mention}!')
     
     #If game has ended, delete the fight instance
@@ -1417,6 +1415,14 @@ async def moves(ctx, who):
 #See the scoreboard
 @bot.command(pass_context=True)
 async def scoreboard(ctx):
+    
+    #Get the scores of each player into the scoreboard
+    data.SCOREBOARD.clear()
+    for p in data.PLAYERDICT:
+        current = data.PLAYERDICT[p]
+        data.SCOREBOARD.append(data.Score(current.name, current.wins, current.losses))
+    data.SCOREBOARD.sort(key=getWin, reverse=True)
+    
     toSend = ''
     
     for s in data.SCOREBOARD:
