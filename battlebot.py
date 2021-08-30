@@ -38,6 +38,10 @@ async def on_ready():
 #                       Helper Functions
 # =============================================================
 
+#Get number of wins from object
+def getWin(score):
+    return int(score.wins)
+
 #Load all CSVs into the game
 def doFiles():
     
@@ -61,12 +65,10 @@ def doFiles():
         for row in reader:
             if (count % 2) != 0:
                 tempName = row[0]
-                tempSet = set()
-                i = 1
-                while(i < len(row)):
-                    tempSet.add(row[i])
-                    i += 1
-                data.PLAYERDICT[str(tempName)] = data.Player(tempName, tempSet)
+                tempSet = row[1]
+                tempWins = row[2]
+                tempLoss = row[3]
+                data.PLAYERDICT[str(tempName)] = data.Player(tempName, tempSet, tempWins, tempLoss)
             count += 1
 
     #Get all of the players moves into player objects
@@ -78,16 +80,23 @@ def doFiles():
         tempMoves = []
 
         for name in splitMoves:
-            if '\'}' not in name:
-                if '{\'' in name:
-                    name = name.split("\'")[1]
-                level = name.split(" ")[0]
-                movename = name.split(" ")[1]
-                for m in ALL_MOVES:
-                    if m.name.lower() in movename.lower():
-                        tempMoves.append(data.Move(m.name, m.elem, m.hp, level))
-                        break
+            if '' != name:
+                if '\'}' not in name:
+                    if '{\'' in name:
+                        name = name.split("\'")[1]
+                    level = name.split(" ")[0]
+                    movename = name.split(" ")[1]
+                    for m in ALL_MOVES:
+                        if m.name.lower() in movename.lower():
+                            tempMoves.append(data.Move(m.name, m.elem, m.hp, level))
+                            break
         p.setMoves(tempMoves)
+
+    #Get the scores of each player into the scoreboard
+    for p in data.PLAYERDICT:
+        current = data.PLAYERDICT[p]
+        data.SCOREBOARD.append(data.Score(current.name, current.wins, current.losses))
+    data.SCOREBOARD.sort(key=getWin, reverse=True)
 
 #Format move data (for .moves)
 def getMoveInfo(move):
@@ -221,8 +230,8 @@ async def autosave():
             for m in player.moves:
                 output += (str(m.level) + ' ' + str(m.name) + '|')
 
-            toSend += f'{player.name},{output}\n'
-            saveWrite.writerow([player.name] + [output])
+            toSend += f'{player.name},{output},{player.wins},{player.losses}\n'
+            saveWrite.writerow([player.name] + [output] + [player.wins] + [player.losses])
 
     user = await bot.fetch_user(int(config.saveUser)) 
     await user.send(f'__***AUTOSAVE BELOW***__\n{toSend}') #Send backup copy to logging account
@@ -399,8 +408,8 @@ async def save(ctx, arg, password = None):
                 for m in player.moves:
                     output += (str(m.level) + ' ' + str(m.name) + '|')
 
-                toSend += f'{player.name},{output}\n'
-                saveWrite.writerow([player.name] + [output])
+                toSend += f'{player.name},{output},{player.wins},{player.losses}\n'
+                saveWrite.writerow([player.name] + [output] + [player.wins] + [player.losses])
         await ctx.send("Done! Player data has been saved")
 
         user = await bot.fetch_user(int(config.adminID))
@@ -1286,7 +1295,7 @@ async def signup(ctx):
             starting = ('3 Hook|3 Front_Kick|3 Belly_Flop|')
             playerWrite.writerow([ctx.author.id] + [starting])    
 
-        data.PLAYERDICT[str(ctx.author.id)] = data.Player(str(ctx.author.id), set())
+        data.PLAYERDICT[str(ctx.author.id)] = data.Player(str(ctx.author.id), set(), 0, 0)
 
         if str(ctx.author.id) in data.PLAYERDICT:
             p = data.PLAYERDICT[str(ctx.author.id)]
@@ -1404,6 +1413,24 @@ async def moves(ctx, who):
             user1 = await bot.fetch_user(player.name)
 
             await ctx.send(f'===================================\nHey {ctx.message.author.mention}, Here\'s a list of {user1.name}\'s moves! \n===================================\n{toSend}')
+
+#See the scoreboard
+@bot.command(pass_context=True)
+async def scoreboard(ctx):
+    toSend = ''
+    
+    for s in data.SCOREBOARD:
+        user = await bot.fetch_user(int(s.player))
+        
+        kd = float(0)
+        if int(s.losses) > 0:
+            kd = float(int(s.wins) / int(s.losses))
+        else:
+            kd = float(int(s.wins))
+
+        toSend += f'{s.wins} wins | {s.losses} losses | ({round(kd, 1)} K/D)\t\t{user.name}\n'
+    
+    await ctx.send(f'Battlebot Scoreboard:\n===========================\n{toSend}\n')
 
 # =============================================================
 #                     Message processing

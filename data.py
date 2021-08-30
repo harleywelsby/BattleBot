@@ -1,6 +1,14 @@
 PLAYERDICT = {}             #Dictionary of players (key = user ID)
 ACTIVE_BOSSFIGHT = None     #Currently active boss fight
 modifier = 5                #How much to divide level multiplier by when calculating damage
+SCOREBOARD = []             #Keeps track of player score
+
+#Stores a scoreboard entry
+class Score:
+    def __init__(self, player, wins, losses):
+        self.player = player
+        self.wins = wins
+        self.losses = losses
 
 #Stores information on a move in training
 class Training:
@@ -51,9 +59,11 @@ class Move:
 
 #Stores information on player's movesets
 class Player:
-    def __init__(self, name, moveNames, effect=None, last=None):
+    def __init__(self, name, moveNames, wins, losses, effect=None, last=None):
         self.name = name
         self.moveNames = moveNames
+        self.wins = int(wins)
+        self.losses = int(losses)
         self.training = False
         self.effect = None
         self.last = None
