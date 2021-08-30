@@ -20,6 +20,7 @@ Please note that currently BattleBot is hosted from a private repository due to 
 - /check training - Checks all moves-in-training for debugging
 - /helpme - Shows all commands
 - /wiki - Explains move types and modifiers
+- /scoreboard - Displays player's wins and losses ordered by most wins
 
 ### Fight System: ###
 - /fight cancel - Cancels an initialized fight.
