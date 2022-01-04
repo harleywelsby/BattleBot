@@ -1,6 +1,8 @@
+# NOTE: This project has been deprecated due to Discord.py's discontinuation, and will be replaced with a Discord.js version in the near future.
+
 # BattleBot
 
-This is a work-in-progress Discord bot that allows users to train in various "moves" and level them to fight in pokemon-style battles against other members of the server.
+This is a Discord bot that allows users to train in various "moves" and level them to fight in pokemon-style battles against other members of the server.
 
 The program takes a CSV file of all moves that can be learned and a CSV of all players who have interacted with the game, and allows users to add moves to their set and level them up in order to fight eachother in a text-based combat system.
 
