@@ -1,4 +1,4 @@
-# NOTE: This project has been deprecated due to Discord.py's discontinuation, and will be replaced with a Discord.js version in the near future.
+# NOTE: This project has been deprecated due to Discord.py's discontinuation, and has been replaced with a Discord.js version that can be found here: https://github.com/harleywelsby/Battlebot.js
 
 # BattleBot
 
